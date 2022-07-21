@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2021 Fraunhofer Institute for Experimental Software Engineering IESE
+#
+# SPDX-License-Identifier: MIT
+
+[package]
+name = "binpicking-app"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+consert_binpicking = { path = "../target/consert_binpicking"}
+termion = "1.5.6"

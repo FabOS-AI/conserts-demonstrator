@@ -1,0 +1,183 @@
+# SPDX-FileCopyrightText: 2021 Fraunhofer Institute for Experimental Software Engineering IESE
+#
+# SPDX-License-Identifier: MIT
+
+---
+guarantees:
+  - id: HighSpeedPicking
+    dimensions:
+      - Numeric: 
+          type: Speed
+          covered:
+            - Inclusive:
+                start: 2.0
+                end: 3.0
+          subset: Guarantee
+          uom: "m/s"
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+  - id: MediumSpeedPicking
+    dimensions:
+      - Numeric: 
+          type: Speed
+          covered:
+            - Inclusive:
+                start: 0.0
+                end: 2.0
+          subset: Guarantee
+          uom: "m/s"
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+  - id: PowerForceReductionPicking
+    dimensions:
+      - Numeric: 
+          type: Speed
+          covered:
+            - Inclusive:
+                start: 0.0
+                end: 1.5
+          subset: Guarantee
+          uom: "m/s"
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+evidence:
+  - id: SpeedModeFast
+    description: "Speed Mode fast active"
+    dimension: 
+      Binary:
+        type: SpeedModeFast
+  - id: SpeedModeReduced
+    description: "Speed Mode reduced active"
+    dimension: 
+      Binary:
+        type: SpeedModeReduced
+  - id: ModesConfigured
+    description: "Modes properly configured"
+    dimension: 
+      Binary:
+        type: ModesConfigured
+  - id: PowerAndForceReduction
+    description: "Power & Force Reduction active"
+    dimension: 
+      Binary:
+        type: PowerAndForceReduction
+  - id: MeasuredForce
+    description: "MeasuredForce"
+    dimension: 
+      Numeric:
+        type: MeasuredForce
+        covered:
+          - Inclusive:
+              start: 0.0
+              end: 2.0 
+        subset: Guarantee
+        uom:  "N"
+  - id: MountedToolSafe
+    description: "Mounted Tool is safe"
+    dimension: 
+      Binary:
+        type: MountedToolSafe
+demands:
+  - id: EnvironmentUnoccupiedLong
+    dimensions:
+      - Numeric: 
+          type: UnoccupiedTime
+          covered:
+            - Inclusive:
+                start: 0.0
+                end: 1.98
+          subset: Demand
+          uom:  "s"
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+  - id: EnvironmentUnoccupiedMedium
+    dimensions:
+      - Numeric: 
+          type: UnoccupiedTime
+          covered:
+            - Inclusive:
+                start: 0.0
+                end: 1.48
+          subset: Demand
+          uom:  "s"
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+gates:
+  - id: Gate0
+    function: And
+  - id: Gate1
+    function: And
+tree_propagations:
+  - from: SpeedModeFast
+    to: HighSpeedPicking
+  - from: EnvironmentUnoccupiedLong
+    to: HighSpeedPicking
+  - from: ModesConfigured
+    to: HighSpeedPicking
+
+  - from: SpeedModeReduced
+    to: Gate1
+  - from: ModesConfigured
+    to: Gate1
+  - from: Gate1
+    to: MediumSpeedPicking
+  - from: Gate1
+    to: PowerForceReductionPicking
+  - from: EnvironmentUnoccupiedMedium
+    to: MediumSpeedPicking
+  - from: PowerAndForceReduction
+    to: Gate0
+  - from: MeasuredForce
+    to: Gate0
+  - from: MountedToolSafe
+    to: Gate0
+  - from: Gate0
+    to: PowerForceReductionPicking
+required_services:
+  - id: OccupationService
+    functional_service_type: EnvironmentOccupation
+    demands:
+      - EnvironmentUnoccupiedLong
+      - EnvironmentUnoccupiedMedium
+  - id: OccupationService
+    functional_service_type: Occupation
+    demands:
+      - UnoccupiedLong
+      - UnoccupiedMedium
+provided_services:
+  - id: PickingService
+    functional_service_type: Picking
+    guarantees:
+      - HighSpeedPicking
+      - MediumSpeedPicking
+      - SafePicking

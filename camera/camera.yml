@@ -1,0 +1,71 @@
+# SPDX-FileCopyrightText: 2021 Fraunhofer Institute for Experimental Software Engineering IESE
+#
+# SPDX-License-Identifier: MIT
+
+---
+guarantees:
+  - id: UnoccupiedLong
+    dimensions:
+      - Numeric:
+          type: UnoccupiedTime
+          covered:
+            - Inclusive:
+                start: 0.0
+                end: 1.875
+          subset: Demand
+          uom: second
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+evidence:
+  - id: InstallationApproved
+    description: "Installation Approved w.r.t. ISO 13855"
+    dimension:
+      Binary:
+        type: InstallationApproved
+  - id: DistanceToHuman
+    description: "Distance to Human >= 3m"    
+    dimension:
+      Numeric:
+        type: Distance
+        covered:
+          - Exclusive:
+              start: 0.0
+              end: 3.0
+        subset: Demand
+        uom: meter
+  - id: ApproximationSpeed
+    description: "Measured Approximation Speed <= 1.6m/s"
+    dimension:
+      Numeric:
+        type: Speed
+        covered:
+          - Inclusive:
+              start: 0.0
+              end: 1.6
+        subset: Demand
+        uom: m/s
+demands: []
+gates:
+  - id: Gate0
+    function: And
+tree_propagations:
+  - from: Gate0
+    to: UnoccupiedLong
+  - from: InstallationApproved
+    to: Gate0
+  - from: ApproximationSpeed
+    to: Gate0
+  - from: DistanceToHuman
+    to: Gate0
+required_services: []
+provided_services:
+  - id: OccupationService
+    functional_service_type: Occupation
+    guarantees:
+      - UnoccupiedLong

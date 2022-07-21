@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2021 Fraunhofer Institute for Experimental Software Engineering IESE
+#
+# SPDX-License-Identifier: MIT
+
+[package]
+name = "camera"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+consert_camera = { path = "../target/consert_camera"}
+crossbeam = { version = "0.7.3", default-features = false }
+rand = "0.8.4"
+termion = "1.5.6"
+uom = "0.31.1"

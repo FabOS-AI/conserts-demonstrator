@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2021 Fraunhofer Institute for Experimental Software Engineering IESE
+#
+# SPDX-License-Identifier: MIT
+
+[package]
+name = "workspace-app"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+consert_workspace = { path = "../target/consert_workspace"}
+crossbeam = { version = "0.7.3", default-features = false }
+rand = "0.8.4"
+termion = "1.5.6"

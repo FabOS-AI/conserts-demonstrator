@@ -1,0 +1,104 @@
+# SPDX-FileCopyrightText: 2021 Fraunhofer Institute for Experimental Software Engineering IESE
+#
+# SPDX-License-Identifier: MIT
+
+---
+guarantees:
+  - id: SafeStop
+    dimensions:
+      - Binary: 
+          type: SafeStop
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+  - id: MediumPerformance
+    dimensions:
+      - Binary: 
+          type: MediumPerformance
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+  - id: HighPerformance
+    dimensions:
+      - Binary: 
+          type: HighPerformance
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+demands:
+  - id: MediumSpeedPicking
+    dimensions:
+      - Numeric: 
+          type: Speed
+          covered:
+            - Inclusive:
+                start: 0.0
+                end: 2.0
+          subset: Guarantee
+          uom: "m/s"
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+  - id: HighSpeedPicking
+    dimensions:
+      - Numeric: 
+          type: Speed
+          covered:
+            - Inclusive:
+                start: 2.0
+                end: 3.0
+          subset: Guarantee
+          uom: "m/s"
+      - Categorical:
+          type: PL
+          covered: ["PL d"]
+          subset: Demand
+      - Categorical:
+          type: SIL
+          covered: ["SIL 2"]
+          subset: Demand
+evidence: []
+gates:
+  - id: Gate0
+    function: Or
+tree_propagations:
+  - from: Gate0
+    to: MediumPerformance
+  - from: MediumSpeedPicking
+    to: Gate0
+  - from: HighSpeedPicking
+    to: Gate0
+  - from: HighSpeedPicking
+    to: HighPerformance
+required_services:
+  - id: PickingService
+    functional_service_type: Picking
+    demands:
+      - HighSpeedPicking
+      - MediumSpeedPicking
+provided_services:
+  - id: BinPickingService
+    functional_service_type: BinPicking
+    guarantees:
+      - HighPerformance
+      - MediumPerformance

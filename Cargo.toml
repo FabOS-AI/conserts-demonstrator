@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2021 Fraunhofer Institute for Experimental Software Engineering IESE
+#
+# SPDX-License-Identifier: MIT
+
+[workspace]
+members = [
+    "binpicking",
+    "robot",
+    "scanner",
+    "workspace",
+]
